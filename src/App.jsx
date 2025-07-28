@@ -1,39 +1,46 @@
 import React, { useState, useEffect } from 'react'
 import Search from './client/components/search'
-
-const API_BASE_URL = 'https://api.igdb.com/v4/';
-
-const CLIENT_ID = import.meta.env.VITE_IGDB_CLIENT_ID;
-const API_KEY = import.meta.env.VITE_IGDB_API_KEY;
-
-const API_OPTIONS = {
-  method: 'GET',
-  headers: {
-    'Accept': 'application/json',
-    'Client-ID': `${CLIENT_ID}`,
-    'Authorization': `Bearer ${API_KEY}`,
-  } 
-}
+import Spinner from './client/components/Spinner';
+import GameCard from './client/components/GameCard';
 
 const App = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
-
   const [errorMessage, setErrorMessage] = useState('');
+  const [gameList, setGameList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchGames = async () => {
+
+    setIsLoading(true);
+    setErrorMessage('');
+      
     try {
-      const endpoint = `${API_BASE_URL}/games`
+      const response = await fetch('http://localhost:3001/api/games');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
 
-      const response = await fetch(endpoint, API_OPTIONS);
+      const data = await response.json();
 
-      alert(response);
+      // Giant Bomb returns data with a `results` array — no `response: 'False'`
+      if (!data.results || data.results.length === 0) {
+        setErrorMessage('No games found.');
+        setGameList([]);
+        return;
+      }
 
+      setGameList(data.results);
+    
+      // setGames(data); etc.
     } catch (error) {
       console.error(`Error fetching games: ${error}`);
-      setErrorMessage('Error fetching games Please try again later.');
+      setErrorMessage('Error fetching games. Please try again later.');
+    } finally {
+      setIsLoading(false);
     }
-  }
+};
 
   useEffect(() => {
     fetchGames();
@@ -55,9 +62,19 @@ const App = () => {
         </header>
 
         <section className='all-games'>
-          <h2>All Games</h2>
+          <h2 className='mt-[40px]'>All Games</h2>
 
-        {errorMessage && <p className='text-red-500'>{errorMessage}</p>}
+          {isLoading ? (
+            <Spinner/>
+          ) : errorMessage ? (
+            <p className='text-red-500'>{errorMessage}</p>
+          ) : (
+            <ul>
+              {gameList.map((game) => (
+                <GameCard key={game.id} game={game} />
+              ))}
+            </ul>
+          )}
         </section>
 
       </div>
