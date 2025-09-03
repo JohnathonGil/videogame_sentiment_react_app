@@ -10,13 +10,19 @@ const App = () => {
   const [gameList, setGameList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchGames = async () => {
+  const fetchGames = async (query = '') => {
 
     setIsLoading(true);
     setErrorMessage('');
       
     try {
-      const response = await fetch('http://localhost:3001/api/games');
+      
+       // If query exists → add it to the request, else fetch normally
+      const endpoint = query
+        ? `http://localhost:3001/api/games?search=${encodeURIComponent(query)}`
+        : `http://localhost:3001/api/games`;
+
+      const response = await fetch(endpoint);
       
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -46,6 +52,12 @@ const App = () => {
     fetchGames();
   }, [])
 
+  // Run only when searchTerm changes (on Enter press or button click)
+  useEffect(() => {
+    if (searchTerm) {
+      fetchGames(searchTerm);
+    }
+  }, [searchTerm]);
 
   return (
     <main>

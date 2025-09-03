@@ -13,11 +13,10 @@ app.use(cors());
 
 // Endpoint to get games with optional offset and limit
 app.get('/api/games', async (req, res) => {
-    const page = req.query.page || 1;
-    const pageSize = req.query.page_size || 20;
-
+    
   try {
-    const data = await fetchGamesFromRAWG(page, pageSize);
+    const query = req.query.search || '';  // optional search
+    const data = await fetchGamesFromRAWG(query);
     res.json(data);
   } catch (err) {
     console.error('Error fetching games:', err.message);

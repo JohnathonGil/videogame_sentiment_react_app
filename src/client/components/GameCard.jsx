@@ -14,7 +14,7 @@ const GameCard = ( { game : { name, background_image, released, rating, esrb_rat
                     <p>{rating || 'N/A'}</p>
                 </div>
                 <span>•</span>
-                <p className='esrb'>{esrb_rating?.name || 'Unrated'}</p> 
+                <p className='esrbrating'>{esrb_rating?.name || 'Unrated'}</p> 
                 <span>•</span>
                 <p className='year'>{released ? released.split('-')[0] : 'N/A'}</p>
             </div>
