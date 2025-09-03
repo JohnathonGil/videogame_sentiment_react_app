@@ -4,7 +4,7 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #030014;
+  --color-primary: #020206;
 
   --color-light-100: #ff8bec;
   --color-light-200: #a8b5db;
@@ -104,8 +104,12 @@
   .game-card {
     @apply bg-dark-100 p-5 rounded-2xl shadow-inner shadow-light-100/10;
 
-    & img {
-      @apply rounded-lg h-auto w-full;
+    & .image-container {
+      @apply w-64 h-64 flex items-center justify-center overflow-hidden rounded-lg;
+    }
+
+    & .image-container img {
+      @apply object-contain; /* no scaling */
     }
 
     & h3 {

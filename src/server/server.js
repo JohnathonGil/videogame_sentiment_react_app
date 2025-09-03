@@ -2,7 +2,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { fetchGamesFromGiantBomb } from './giantbombdb.js';
+import { fetchGamesFromRAWG } from './rawgdb.js';
 
 dotenv.config();
 
@@ -13,15 +13,15 @@ app.use(cors());
 
 // Endpoint to get games with optional offset and limit
 app.get('/api/games', async (req, res) => {
-  const offset = parseInt(req.query.offset) || 0;
-  const limit = parseInt(req.query.limit) || 10;
+    const page = req.query.page || 1;
+    const pageSize = req.query.page_size || 20;
 
   try {
-    const games = await fetchGamesFromGiantBomb(offset, limit);
-    res.json(games);
+    const data = await fetchGamesFromRAWG(page, pageSize);
+    res.json(data);
   } catch (err) {
     console.error('Error fetching games:', err.message);
-    res.status(500).json({ error: 'Failed to fetch games from Giant Bomb' });
+    res.status(500).json({ error: 'Failed to fetch games from RAWG' });
   }
 });
 
